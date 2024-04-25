@@ -13,6 +13,12 @@ void print_error(ErrorCode error_code) {
         case READ_ERROR:
             printf("Error: Read error or EOF.\n");
             break;
+        case CD_FAILED:
+            printf("Error: Error in 'CD' command.\n");
+            break;
+        case EXEC_FAILED:
+            printf("Error: Error in fork 'LS'.\n");
+            break;
         default:
             printf("Unknown error.\n");
             break;

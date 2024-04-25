@@ -4,8 +4,10 @@
 
 typedef enum {
     NO_ERROR,
-    INVALID_COMMAND,
-    READ_ERROR, //erro de leitura ou EOF
+    INVALID_COMMAND, // Comando inválido
+    READ_ERROR, // Erro de leitura ou EOF
+    CD_FAILED, // Erro no comando "CD"
+    EXEC_FAILED, // Erro no fork "LS"
 
 } ErrorCode;
 
