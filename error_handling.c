@@ -1,3 +1,4 @@
+//error_handling.c
 #include <stdio.h>
 #include "error_handling.h"
 
@@ -9,7 +10,9 @@ void print_error(ErrorCode error_code) {
         case INVALID_COMMAND:
             printf("Error: Invalid command.\n");
             break;
-
+        case READ_ERROR:
+            printf("Error: Read error or EOF.\n");
+            break;
         default:
             printf("Unknown error.\n");
             break;
