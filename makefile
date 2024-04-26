@@ -1,9 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 
-SRCS = main.c error_handling.c shell_functions.c
+SRCS = gosh.c error_handling.c shell_functions.c
 OBJS = $(SRCS:.c=.o)
-TARGET = program
+TARGET = gosh
 
 # cat
 CAT_SRCS = cat/cat.c
