@@ -30,7 +30,16 @@ $(LS_TARGET): $(LS_OBJS)
 	$(CC) $(CFLAGS) $(LS_OBJS) -o $(LS_TARGET)
 
 clean:
-	rm -f $(OBJS) $(TARGET) $(CAT_OBJS) $(CAT_TARGET) $(LS_OBJS) $(LS_TARGET)
+	rm -f $(OBJS) $(TARGET) $(CAT_OBJS) $(CAT_TARGET) $(LS_OBJS) $(LS_TARGET) gosh.zip
+
+release: CFLAGS := $(filter-out -g,$(CFLAGS))
+release: all
+	zip -r gosh.zip gosh cat/cat ls/ls
+
+setup:
+	sudo apt-get update
+	sudo apt-get install -y build-essential
+
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
