@@ -43,8 +43,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: gosh_${{ github.ref }}
+        tag_name: ${{ github.sha }}
+        release_name: gosh_${{ github.sha }}
         body: |
           Changes in this Release
         draft: false
