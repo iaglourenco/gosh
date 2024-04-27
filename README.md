@@ -1,5 +1,7 @@
 # gosh
 
+[![Build](https://github.com/iaglourenco/gosh/actions/workflows/builld.yaml/badge.svg)](https://github.com/iaglourenco/gosh/actions/workflows/builld.yaml)
+
 gosh stands for **G**reat, An**o**ther **Sh**ell. It is a very simple Linux shell written in C. It was made only for educational purposes and it is not intended to be used in a production environment.
 
 # Concepts
