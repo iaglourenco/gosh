@@ -21,6 +21,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // Inicializa a lista de caminhos com os programas padrão
+    initialize_paths();
+
     while (1) {
         if (shellFile) { // Se estiver lendo de um arquivo shell
             if (fgets(command, MAX_COMMAND_LENGTH, shellFile) == NULL) {

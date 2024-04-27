@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 SRCS = gosh.c error_handling.c shell_functions.c
 OBJS = $(SRCS:.c=.o)

@@ -8,6 +8,9 @@ int main(int argc, char *argv[]) {
         argv[1] = ".";
     }
 
+    // Parametros -l e -a
+
+
     // Abre o diretório
     DIR *dir = opendir(argv[1]);
     if (dir == NULL) {
@@ -21,6 +24,7 @@ int main(int argc, char *argv[]) {
     while ((entry = readdir(dir)) != NULL) {
         printf("%s\t", entry->d_name);
     }
+    printf("\n");
 
     // Fecha o diretório
     closedir(dir);
