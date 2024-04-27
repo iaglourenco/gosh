@@ -41,16 +41,16 @@ jobs:
       id: vars
       run: |
         SHA=$(git rev-parse --short HEAD)
-        MMDD=$(date +'%m%d')
-        echo "tagname=${MMDD}_${SHA}" >> $GITHUB_OUTPUT
+        MMDD=$(date +'%Y%m%d')
+        echo "tagname=${MMDD}.${SHA}" >> $GITHUB_OUTPUT
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.vars.outputs.tagname }}
-        release_name: gosh_${{ steps.vars.outputs.tagname }}
+        tag_name: v${{ steps.vars.outputs.tagname }}
+        release_name: gosh_v${{ steps.vars.outputs.tagname }}
         body: |
           Changes in this Release
         draft: false
