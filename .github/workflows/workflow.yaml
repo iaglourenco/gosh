@@ -38,11 +38,11 @@ jobs:
         path: release
 
     - name: Generate Tag
-        id: vars
-        run: |
-          SHA=$(git rev-parse --short HEAD)
-          MMDD=$(date +'%m%d')
-          echo "tagname=${MMDD}_${SHA}" >> $GITHUB_OUTPUT
+      id: vars
+      run: |
+        SHA=$(git rev-parse --short HEAD)
+        MMDD=$(date +'%m%d')
+        echo "tagname=${MMDD}_${SHA}" >> $GITHUB_OUTPUT
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
