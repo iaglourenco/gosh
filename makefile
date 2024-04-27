@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 SRCS = gosh.c error_handling.c shell_functions.c
 OBJS = $(SRCS:.c=.o)
@@ -31,6 +31,17 @@ $(LS_TARGET): $(LS_OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARGET) $(CAT_OBJS) $(CAT_TARGET) $(LS_OBJS) $(LS_TARGET)
+	rm -rf release/
+
+release: CFLAGS := $(filter-out -g,$(CFLAGS))
+release: all
+	mkdir -p release
+	zip -r release/gosh.zip gosh cat/cat ls/ls
+
+setup:
+	sudo apt-get update
+	sudo apt-get install -y build-essential
+
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

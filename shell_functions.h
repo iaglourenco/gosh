@@ -3,5 +3,6 @@
 #define SHELL_FUNCTIONS_H
 
 void execute_command(char *command);
+void initialize_paths();
 
 #endif
