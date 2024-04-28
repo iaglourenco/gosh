@@ -172,13 +172,13 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            printf("%s %2ld %s %s %5ld %.12s %s\n",
+            printf("%s %2ld %s %s %5.2f kB %.12s %s\n",
                    get_permissions(st.st_mode),
                    st.st_nlink,
                    get_user(st.st_uid),
                    get_group(st.st_gid),
-                   st.st_size,
-                   4 + ctime(&st.st_mtime) + 4,
+                   st.st_size/1024.0,
+                   ctime(&st.st_mtime) + 4,
                    entries[i]);
         }
     }
