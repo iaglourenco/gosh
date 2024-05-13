@@ -58,6 +58,10 @@ int main(int argc, char *argv[]) {
         // Remove o caractere de nova linha, se presente
         command[strcspn(command, "\n")] = '\0';
 
+        // Ignora comandos vazios
+        if(command[0] == '\0' || command[0] == '\n') {
+            continue;
+        }
 
         execute_command(command);
     }
