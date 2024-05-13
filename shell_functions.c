@@ -38,14 +38,17 @@ void initialize_paths()
 void add_path(char *path)
 {
     // Adiciona um novo caminho à lista
-    if (num_paths < MAX_PATHS)
+    if (num_paths >= MAX_PATHS)
     {
-        search_paths[num_paths++] = path;
+        print_error(MAX_PATHS_REACHED);
+        return;
     }
-    else
-    {
-        printf("Limite máximo de caminhos atingido.\n");
+    char *path_copy = strdup(path);
+    if(path_copy == NULL){
+        print_error(MALLOC_FAILED);
+        return;
     }
+    search_paths[num_paths++] = path_copy;
 }
 
 char *search_executable(char *command)
@@ -108,6 +111,16 @@ void execute_command(char *command)
     }
     else if (strcmp(args[0], "path") == 0)
     {
+        // Mostra os caminhos definidos
+        if (arg_count == 1)
+        {
+            for (int i = 0; i < num_paths; i++)
+            {
+                printf("%s\n", search_paths[i]);
+            }
+            return;
+        }
+
         // Define os caminhos especificados
         for (int i = 1; i < arg_count; i++)
         {
