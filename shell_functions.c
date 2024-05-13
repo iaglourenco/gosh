@@ -12,6 +12,20 @@
 char *search_paths[MAX_PATHS];
 int num_paths = 0;
 
+void help_message()
+{
+    printf("gosh - Great, Another Shell\n");
+    printf("\tUsage: gosh script-file\n\n");
+    printf("\tInternal commands:\n");
+    printf("\t\tcd <path> - Change the current directory\n");
+    printf("\t\texit - Exit the shell\n");
+    printf("\t\tpath [path1 path2 ...] - Show or set the search paths\n");
+    printf("\t\thelp - Show this help message\n");
+    printf("\tExternal commands:\n");
+    printf("\t\tls [-l] [-a] [path] - List files and directories\n");
+    printf("\t\tcat <file> - Show the content of a file\n");
+}
+
 void initialize_paths()
 {
     // Inicializa a lista de caminhos com o caminho padrão
@@ -44,7 +58,8 @@ void add_path(char *path)
         return;
     }
     char *path_copy = strdup(path);
-    if(path_copy == NULL){
+    if (path_copy == NULL)
+    {
         print_error(MALLOC_FAILED);
         return;
     }
@@ -90,7 +105,12 @@ void execute_command(char *command)
     args[arg_count] = NULL;
 
     // Comandos internos
-    if (strcmp(args[0], "exit") == 0)
+    if (strcmp(args[0], "help") == 0)
+    {
+        help_message();
+        return;
+    }
+    else if (strcmp(args[0], "exit") == 0)
     {
         exit(EXIT_SUCCESS);
     }

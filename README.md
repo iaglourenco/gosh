@@ -15,7 +15,7 @@ gosh stands for **G**reat, An**o**ther **Sh**ell. It is a very simple Linux shel
 - [x] Execute commands from a file.
 - [ ] Execute commands in parallel.(Work in progress)
 - [ ] Output redirection to a file. (Work in progress)
-- [ ] A clone of cat command. (Partially implemented)
+- [x] A clone of cat command.
 - [x] A clone of ls command.
 
 

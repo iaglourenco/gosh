@@ -4,5 +4,6 @@
 
 void execute_command(char *command);
 void initialize_paths();
+void help_message();
 
 #endif
