@@ -178,18 +178,4 @@ void execute_command(char *command)
     {
         print_error(INVALID_COMMAND);
     }
-
-    // pid = fork();
-    // if (pid < 0) {
-    //     perror("fork");
-    //     exit(EXIT_FAILURE);
-    // } else if (pid == 0) { // Processo filho
-    //     if (execvp(args[0], args) == -1) {
-    //         print_error(EXEC_FAILED);
-    //         exit(EXIT_FAILURE);
-    //     }
-    // } else { // Processo pai
-    //     int status;
-    //     waitpid(pid, &status, 0);
-    // }
 }
