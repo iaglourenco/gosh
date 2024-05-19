@@ -13,20 +13,10 @@
 
 int compare(const void *a, const void *b)
 {
-    const char *entry1 = *(const char **)a;
-    const char *entry2 = *(const char **)b;
+    const char **entry1 = (const char **)a;
+    const char **entry2 = (const char **)b;
 
-    // Diretorios '.' e '..' sempre vêm primeiro
-    if (strcmp(entry1, ".") == 0 || strcmp(entry1, "..") == 0)
-    {
-        return -1;
-    }
-    if (strcmp(entry2, ".") == 0 || strcmp(entry2, "..") == 0)
-    {
-        return 1;
-    }
-
-    return strcmp(entry1, entry2);
+    return strcasecmp(*entry1, *entry2);
 }
 
 // Tipo de arquivo
