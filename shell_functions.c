@@ -12,6 +12,20 @@
 char *search_paths[MAX_PATHS];
 int num_paths = 0;
 
+void help_message()
+{
+    printf("gosh - Great, Another Shell\n");
+    printf("\tUsage: gosh script-file\n\n");
+    printf("\tInternal commands:\n");
+    printf("\t\tcd <path> - Change the current directory\n");
+    printf("\t\texit - Exit the shell\n");
+    printf("\t\tpath [path1 path2 ...] - Show or set the search paths\n");
+    printf("\t\thelp - Show this help message\n");
+    printf("\tExternal commands:\n");
+    printf("\t\tls [-l] [-a] [path] - List files and directories\n");
+    printf("\t\tcat <file> - Show the content of a file\n");
+}
+
 void initialize_paths()
 {
     // Inicializa a lista de caminhos com o caminho padrão
@@ -38,14 +52,18 @@ void initialize_paths()
 void add_path(char *path)
 {
     // Adiciona um novo caminho à lista
-    if (num_paths < MAX_PATHS)
+    if (num_paths >= MAX_PATHS)
     {
-        search_paths[num_paths++] = path;
+        print_error(MAX_PATHS_REACHED);
+        return;
     }
-    else
+    char *path_copy = strdup(path);
+    if (path_copy == NULL)
     {
-        printf("Limite máximo de caminhos atingido.\n");
+        print_error(MALLOC_FAILED);
+        return;
     }
+    search_paths[num_paths++] = path_copy;
 }
 
 char *search_executable(char *command)
@@ -87,7 +105,12 @@ void execute_command(char *command)
     args[arg_count] = NULL;
 
     // Comandos internos
-    if (strcmp(args[0], "exit") == 0)
+    if (strcmp(args[0], "help") == 0)
+    {
+        help_message();
+        return;
+    }
+    else if (strcmp(args[0], "exit") == 0)
     {
         exit(EXIT_SUCCESS);
     }
@@ -108,6 +131,16 @@ void execute_command(char *command)
     }
     else if (strcmp(args[0], "path") == 0)
     {
+        // Mostra os caminhos definidos
+        if (arg_count == 1)
+        {
+            for (int i = 0; i < num_paths; i++)
+            {
+                printf("%s\n", search_paths[i]);
+            }
+            return;
+        }
+
         // Define os caminhos especificados
         for (int i = 1; i < arg_count; i++)
         {
@@ -145,18 +178,4 @@ void execute_command(char *command)
     {
         print_error(INVALID_COMMAND);
     }
-
-    // pid = fork();
-    // if (pid < 0) {
-    //     perror("fork");
-    //     exit(EXIT_FAILURE);
-    // } else if (pid == 0) { // Processo filho
-    //     if (execvp(args[0], args) == -1) {
-    //         print_error(EXEC_FAILED);
-    //         exit(EXIT_FAILURE);
-    //     }
-    // } else { // Processo pai
-    //     int status;
-    //     waitpid(pid, &status, 0);
-    // }
 }

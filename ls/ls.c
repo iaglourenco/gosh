@@ -13,20 +13,10 @@
 
 int compare(const void *a, const void *b)
 {
-    const char *entry1 = *(const char **)a;
-    const char *entry2 = *(const char **)b;
+    const char **entry1 = (const char **)a;
+    const char **entry2 = (const char **)b;
 
-    // Diretorios '.' e '..' sempre vêm primeiro
-    if (strcmp(entry1, ".") == 0 || strcmp(entry1, "..") == 0)
-    {
-        return -1;
-    }
-    if (strcmp(entry2, ".") == 0 || strcmp(entry2, "..") == 0)
-    {
-        return 1;
-    }
-
-    return strcmp(entry1, entry2);
+    return strcasecmp(*entry1, *entry2);
 }
 
 // Tipo de arquivo
@@ -172,13 +162,13 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            printf("%s %2ld %s %s %5ld %.12s %s\n",
+            printf("%s %2ld %s %s %5.2f kB %.12s %s\n",
                    get_permissions(st.st_mode),
                    st.st_nlink,
                    get_user(st.st_uid),
                    get_group(st.st_gid),
-                   st.st_size,
-                   4 + ctime(&st.st_mtime) + 4,
+                   st.st_size/1024.0,
+                   ctime(&st.st_mtime) + 4,
                    entries[i]);
         }
     }
