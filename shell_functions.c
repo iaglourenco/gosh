@@ -8,16 +8,33 @@
 #include "error_handling.h"
 
 #define MAX_PATHS 10
+#define MAX_COMMANDS 64
 
 char *search_paths[MAX_PATHS];
 int num_paths = 0;
 
+<<<<<<< Updated upstream
 void initialize_paths()
 {
+=======
+void help_message() {
+    printf("gosh - Great, Another Shell\n");
+    printf("\tUsage: gosh script-file\n\n");
+    printf("\tInternal commands:\n");
+    printf("\t\tcd <path> - Change the current directory\n");
+    printf("\t\texit - Exit the shell\n");
+    printf("\t\tpath [path1 path2 ...] - Show or set the search paths\n");
+    printf("\t\thelp - Show this help message\n");
+    printf("\tExternal commands:\n");
+    printf("\t\tls [-l] [-a] [path] - List files and directories\n");
+    printf("\t\tcat <file> - Show the content of a file\n");
+}
+
+void initialize_paths() {
+>>>>>>> Stashed changes
     // Inicializa a lista de caminhos com o caminho padrão
     char cwd[1024];
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-    {
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
         char *local_cat = malloc(strlen(cwd) + strlen("/cat") + 1);
         strcpy(local_cat, cwd);
         strcat(local_cat, "/cat");
@@ -28,16 +45,14 @@ void initialize_paths()
         search_paths[0] = local_cat;
         search_paths[1] = local_ls;
         num_paths = 2;
-    }
-    else
-    {
+    } else {
         perror("getcwd");
     }
 }
 
-void add_path(char *path)
-{
+void add_path(char *path) {
     // Adiciona um novo caminho à lista
+<<<<<<< Updated upstream
     if (num_paths < MAX_PATHS)
     {
         search_paths[num_paths++] = path;
@@ -45,23 +60,29 @@ void add_path(char *path)
     else
     {
         printf("Limite máximo de caminhos atingido.\n");
+=======
+    if (num_paths >= MAX_PATHS) {
+        print_error(MAX_PATHS_REACHED);
+        return;
+    }
+    char *path_copy = strdup(path);
+    if (path_copy == NULL) {
+        print_error(MALLOC_FAILED);
+        return;
+>>>>>>> Stashed changes
     }
 }
 
-char *search_executable(char *command)
-{
+char *search_executable(char *command) {
     // Procura o executável nas listas de caminhos
-    for (int i = 0; i < num_paths; i++)
-    {
+    for (int i = 0; i < num_paths; i++) {
         char *full_path = malloc(strlen(search_paths[i]) + strlen(command) + 2); // +2 para / e \0
-        if (!full_path)
-        {
+        if (!full_path) {
             perror("malloc");
             exit(EXIT_FAILURE);
         }
         sprintf(full_path, "%s/%s", search_paths[i], command);
-        if (access(full_path, X_OK) == 0)
-        {
+        if (access(full_path, X_OK) == 0) {
             return full_path; // Retorna o caminho completo se encontrado
         }
         free(full_path);
@@ -69,6 +90,7 @@ char *search_executable(char *command)
     return NULL; // Retorna NULL se não encontrado
 }
 
+<<<<<<< Updated upstream
 // Função auxiliar para dividir a linha de comando em subcomandos
 char** split_command(char* command, const char* delimiter, int* count) {
     char** commands = malloc(64 * sizeof(char*)); // ajusta conforme necessário
@@ -85,6 +107,8 @@ char** split_command(char* command, const char* delimiter, int* count) {
     return commands;
 }
 
+=======
+>>>>>>> Stashed changes
 void execute_single_command(char *command) {
     char *args[64];
     int arg_count = 0;
@@ -101,7 +125,14 @@ void execute_single_command(char *command) {
     args[arg_count] = NULL;
 
     // Comandos internos
+<<<<<<< Updated upstream
     if (strcmp(args[0], "exit") == 0) {
+=======
+    if (strcmp(args[0], "help") == 0) {
+        help_message();
+        return;
+    } else if (strcmp(args[0], "exit") == 0) {
+>>>>>>> Stashed changes
         exit(EXIT_SUCCESS);
     } else if (strcmp(args[0], "cd") == 0) {
         if (arg_count > 1) {
@@ -113,6 +144,17 @@ void execute_single_command(char *command) {
         }
         return;
     } else if (strcmp(args[0], "path") == 0) {
+<<<<<<< Updated upstream
+=======
+        // Mostra os caminhos definidos
+        if (arg_count == 1) {
+            for (int i = 0; i < num_paths; i++) {
+                printf("%s\n", search_paths[i]);
+            }
+            return;
+        }
+
+>>>>>>> Stashed changes
         // Define os caminhos especificados
         for (int i = 1; i < arg_count; i++) {
             add_path(args[i]);
@@ -143,6 +185,7 @@ void execute_single_command(char *command) {
 }
 
 void execute_command(char *command) {
+<<<<<<< Updated upstream
     int count;
     char** commands = split_command(command, "&", &count);
 
@@ -170,3 +213,33 @@ void execute_command(char *command) {
     }
     free(commands);
 }
+=======
+    char *commands[MAX_COMMANDS];
+    int command_count = 0;
+
+    // Dividir a linha de comando em comandos separados pelo operador '&'
+    char *token = strtok(command, "&");
+    while (token != NULL && command_count < MAX_COMMANDS) {
+        commands[command_count++] = token;
+        token = strtok(NULL, "&");
+    }
+
+    // Executar cada comando em um processo separado
+    for (int i = 0; i < command_count; i++) {
+        pid_t pid = fork();
+        if (pid < 0) {
+            perror("fork");
+            return;
+        } else if (pid == 0) {
+            execute_single_command(commands[i]);
+            exit(EXIT_SUCCESS);
+        }
+    }
+
+    // Esperar por todos os processos filhos
+    for (int i = 0; i < command_count; i++) {
+        int status;
+        wait(&status);
+    }
+}
+>>>>>>> Stashed changes
