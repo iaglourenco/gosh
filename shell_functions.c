@@ -8,12 +8,12 @@
 #include "error_handling.h"
 
 #define MAX_PATHS 10
+#define MAX_COMMANDS 64
 
 char *search_paths[MAX_PATHS];
 int num_paths = 0;
 
-void help_message()
-{
+void help_message() {
     printf("gosh - Great, Another Shell\n");
     printf("\tUsage: gosh script-file\n\n");
     printf("\tInternal commands:\n");
@@ -26,12 +26,10 @@ void help_message()
     printf("\t\tcat <file> - Show the content of a file\n");
 }
 
-void initialize_paths()
-{
+void initialize_paths() {
     // Inicializa a lista de caminhos com o caminho padrão
     char cwd[1024];
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-    {
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
         char *local_cat = malloc(strlen(cwd) + strlen("/cat") + 1);
         strcpy(local_cat, cwd);
         strcat(local_cat, "/cat");
@@ -42,9 +40,7 @@ void initialize_paths()
         search_paths[0] = local_cat;
         search_paths[1] = local_ls;
         num_paths = 2;
-    }
-    else
-    {
+    } else {
         perror("getcwd");
     }
 }
@@ -66,20 +62,16 @@ void add_path(char *path)
     search_paths[num_paths++] = path_copy;
 }
 
-char *search_executable(char *command)
-{
+char *search_executable(char *command) {
     // Procura o executável nas listas de caminhos
-    for (int i = 0; i < num_paths; i++)
-    {
+    for (int i = 0; i < num_paths; i++) {
         char *full_path = malloc(strlen(search_paths[i]) + strlen(command) + 2); // +2 para / e \0
-        if (!full_path)
-        {
+        if (!full_path) {
             perror("malloc");
             exit(EXIT_FAILURE);
         }
         sprintf(full_path, "%s/%s", search_paths[i], command);
-        if (access(full_path, X_OK) == 0)
-        {
+        if (access(full_path, X_OK) == 0) {
             return full_path; // Retorna o caminho completo se encontrado
         }
         free(full_path);
@@ -87,8 +79,24 @@ char *search_executable(char *command)
     return NULL; // Retorna NULL se não encontrado
 }
 
-void execute_command(char *command)
-{
+
+// Função auxiliar para dividir a linha de comando em subcomandos
+char** split_command(char* command, const char* delimiter, int* count) {
+    char** commands = malloc(64 * sizeof(char*)); // ajusta conforme necessário
+    char* token = strtok(command, delimiter);
+    int i = 0;
+
+    while (token != NULL) {
+        commands[i++] = strdup(token);
+        token = strtok(NULL, delimiter);
+    }
+    commands[i] = NULL;
+    *count = i;
+
+    return commands;
+}
+
+void execute_single_command(char *command) {
     char *args[64];
     int arg_count = 0;
     pid_t pid;
@@ -178,4 +186,33 @@ void execute_command(char *command)
     {
         print_error(INVALID_COMMAND);
     }
+}
+
+void execute_command(char *command) {
+    int count;
+    char** commands = split_command(command, "&", &count);
+
+    for (int i = 0; i < count; i++) {
+        pid_t pid = fork();
+        if (pid < 0) {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        } else if (pid == 0) {
+            // Processo filho executa o comando
+            execute_single_command(commands[i]);
+            exit(EXIT_SUCCESS); // Certifique-se de sair após a execução do comando
+        }
+    }
+
+    // Processo pai espera todos os filhos terminarem
+    for (int i = 0; i < count; i++) {
+        int status;
+        wait(&status);
+    }
+
+    // Liberar memória
+    for (int i = 0; i < count; i++) {
+        free(commands[i]);
+    }
+    free(commands);
 }
