@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include "error_handling.h"
 #include "shell_functions.h"
 
 #define MAX_COMMAND_LENGTH 1024
+#define MAX_COMMANDS 10
 
 int main(int argc, char *argv[])
 {
@@ -86,58 +88,108 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        // Verifica se há redirecionamento de saída
-        char *redirection = strstr(command, ">");
-        int saved_stdout = -1;
-        int fd = -1;
-
-        if (redirection)
+        // Divide os comandos pelo operador '&'
+        char *commands[MAX_COMMANDS];
+        int command_count = 0;
+        char *token = strtok(command, "&");
+        while (token != NULL)
         {
-            *redirection = '\0'; // Remove o > do comando
-            redirection++;       // Pula o > e pega o nome do arquivo
-
-            // Pula os espaços em branco
-            while (*redirection == ' ')
-                redirection++;
-
-            // Abre o arquivo para escrita
-            fd = open(redirection, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            if (fd < 0)
-            {
-                perror("Failed to open the file");
-                exit(EXIT_FAILURE);
-            }
-
-            // Salva o descritor de arquivo padrão
-            saved_stdout = dup(STDOUT_FILENO);
-            if (saved_stdout < 0)
-            {
-                perror("Failed to duplicate the file descriptor");
-                close(fd);
-                continue;
-            }
-
-            // Redireciona a saída padrão para o arquivo
-            if (dup2(fd, STDOUT_FILENO) < 0)
-            {
-                perror("Failed to duplicate the file descriptor");
-                close(fd);
-                continue;
-            }
-
-            // Fecha o descritor de arquivo
-            close(fd);
+            commands[command_count++] = token;
+            token = strtok(NULL, "&");
         }
+        commands[command_count] = NULL;
 
-        execute_command(command);
-
-        // Restaura a saída padrão, se necessário
-        if (saved_stdout >= 0)
+        for (int i = 0; i < command_count; i++)
         {
-            if(dup2(saved_stdout, STDOUT_FILENO) <0){
-                perror("Failed to duplicate the file descriptor");
-                close(saved_stdout);
-                continue;
+            char *command = commands[i];
+
+            // Remove espaços em branco no início do comando
+            while (*command == ' ')
+                command++;
+
+            // Verifica se há redirecionamento de saída
+            char *redirection = strstr(command, ">");
+            int saved_stdout = -1;
+            int fd = -1;
+
+            if (redirection)
+            {
+                *redirection = '\0'; // Remove o > do comando
+                redirection++;       // Pula o > e pega o nome do arquivo
+
+                // Pula os espaços em branco
+                while (*redirection == ' ')
+                    redirection++;
+
+                // Remove os espaços em branco no final
+                char *end = redirection + strlen(redirection) - 1;
+                while (*end == ' ')
+                {
+                    *end = '\0';
+                    end--;
+                }
+
+                // Abre o arquivo para escrita
+                fd = open(redirection, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                if (fd < 0)
+                {
+                    perror("Failed to open the file");
+                    exit(EXIT_FAILURE);
+                }
+
+                // Salva o descritor de arquivo padrão
+                saved_stdout = dup(STDOUT_FILENO);
+                if (saved_stdout < 0)
+                {
+                    perror("Failed to duplicate the file descriptor");
+                    close(fd);
+                    continue;
+                }
+
+                // Redireciona a saída padrão para o arquivo
+                if (dup2(fd, STDOUT_FILENO) < 0)
+                {
+                    perror("Failed to duplicate the file descriptor");
+                    close(fd);
+                    continue;
+                }
+
+                // Fecha o descritor de arquivo
+                close(fd);
+            }
+
+            // Executa o ultimo comando no pai
+            if (i == command_count - 1)
+            {
+                execute_command(commands[i]);
+            }
+            else
+            {
+
+                pid_t pid = fork();
+                if (pid == 0)
+                {
+
+                    execute_command(command);
+                }
+                else if (pid < 0)
+                {
+                    print_error(FORK_FAILED);
+                }
+                else
+                {
+                    wait(NULL);
+                }
+            }
+            // Restaura a saída padrão, se necessário
+            if (saved_stdout >= 0)
+            {
+                if (dup2(saved_stdout, STDOUT_FILENO) < 0)
+                {
+                    perror("Failed to duplicate the file descriptor");
+                    close(saved_stdout);
+                    continue;
+                }
             }
         }
     }
