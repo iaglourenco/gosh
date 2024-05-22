@@ -169,8 +169,8 @@ int main(int argc, char *argv[])
                 pid_t pid = fork();
                 if (pid == 0)
                 {
-
                     execute_command(command);
+                    exit(EXIT_SUCCESS);
                 }
                 else if (pid < 0)
                 {
