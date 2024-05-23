@@ -2,88 +2,80 @@
 
 [![Build](https://github.com/iaglourenco/gosh/actions/workflows/builld.yaml/badge.svg)](https://github.com/iaglourenco/gosh/actions/workflows/builld.yaml)
 
-gosh stands for **G**reat, An**o**ther **Sh**ell. It is a very simple Linux shell written in C. It was made only for educational purposes and it is not intended to be used in a production environment.
+gosh significa **G**reat, An**o**ther **Sh**ell. É um shell Linux muito simples escrito em C. Foi feito apenas para fins educacionais e não se destina a ser usado em um ambiente de produção.
 
-# Concepts
-- System calls
-- Creation and management of processes
-- File management
+# Conceitos
+- Chamadas de sistema
+- Criação e gerenciamento de processos
+- Gerenciamento de arquivos
 
+# Recursos
+- [x] Executar comandos interativamente, obviamente.
+- [x] Executar comandos a partir de um arquivo.
+- [x] Executar comandos em paralelo.
+- [x] Redirecionamento de saída para um arquivo.
+- [x] Um clone do comando cat.
+- [x] Um clone do comando ls.
 
-# Features
-- [x] Execute commands interactively, obviously.
-- [x] Execute commands from a file.
-- [x] Execute commands in parallel.
-- [x] Output redirection to a file.
-- [x] A clone of cat command.
-- [x] A clone of ls command.
+# Como usar
 
+## Binários pré-compilados
 
-# How to use
+Você pode baixar o último binário pré-compilado na página de [lançamentos](https://github.com/iaglourenco/gosh/releases).
 
-## Precompiled binaries
-
-You can download the latest precompiled binary from the [releases](https://github.com/iaglourenco/gosh/releases) page.
-
-Extract the files and navigate to the directory where the binary is located.
+Extraia os arquivos e navegue até o diretório onde o binário está localizado.
 
 ```bash
 unzip gosh.zip
 cd gosh
 ```
 
-To run the shell, just execute the binary file.
+Para executar o shell, basta executar o arquivo binário.
 
 ```bash
 ./gosh
 ```
 
-If you want to use the `cat` or `ls` commands, you need to register the path of the binaries using the `path` command while running the shell.
+Se você quiser usar os comandos `cat` ou `ls`, você precisa registrar o caminho dos binários usando o comando `path` ao executar o shell.
 
 ```bash
-
 ./gosh
-
-gosh> path </path/to/binaries>
+gosh> path </caminho/para/os/binários>
 ```
 
+## Compilar a partir do código fonte
 
-## Compile from source
-
-To compile the shell from source, you need to have the `build-essential` and `git` packages installed on your system.
+Para compilar o shell a partir do código fonte, você precisa ter os pacotes `build-essential` e `git` instalados em seu sistema.
 
 ```bash
-sudo apt install build-essential
+sudo apt install build-essential git make
 ```
 
-Then, clone the repository and compile the source code using the `make` command.
+Depois, clone o repositório e compile o código fonte usando o comando `make`.
 
 ```bash
 git clone https://github.com/iaglourenco/gosh.git
-
 cd gosh
-
 make all
 ```
 
-# Commands
+# Comandos
 
-- `cd` - Changes the current directory.
-- `exit` - Exits the shell.
-- `cat` - Concatenates and displays the content of files. (Needs to be in the same directory as the shell binary)
-- `ls` - Lists the files in the current directory. (Needs to be in the same directory as the shell binary)
-- `path`- Register the path where the shell will look for programs to execute, it's the same as the PATH environment variable.
-- `help` - Displays the help message.
+- `cd` - Muda o diretório atual.
+- `exit` - Sai do shell.
+- `cat` - Concatena e exibe o conteúdo dos arquivos. (Precisa estar no mesmo diretório que o binário do shell)
+- `ls` - Lista os arquivos no diretório atual. (Precisa estar no mesmo diretório que o binário do shell)
+- `path` - Registra o caminho onde o shell procurará programas para executar, é o mesmo que a variável de ambiente PATH.
+- `help` - Exibe a mensagem de ajuda.
 
+## Executar comandos a partir de um arquivo
 
-## Execute commands from a file
-
-You can execute commands from a file using the following syntax:
+Você pode executar comandos a partir de um arquivo usando a seguinte sintaxe:
 
 ```bash
-./gosh <file>
+./gosh <arquivo>
 ```
 
-# License
+# Licença
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+Este projeto está licenciado sob a Licença Pública Geral GNU v3.0 - veja o arquivo [LICENSE](LICENSE) para detalhes.
