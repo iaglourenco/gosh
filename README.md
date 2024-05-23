@@ -13,8 +13,8 @@ gosh stands for **G**reat, An**o**ther **Sh**ell. It is a very simple Linux shel
 # Features
 - [x] Execute commands interactively, obviously.
 - [x] Execute commands from a file.
-- [ ] Execute commands in parallel.(Work in progress)
-- [ ] Output redirection to a file. (Work in progress)
+- [x] Execute commands in parallel.
+- [x] Output redirection to a file.
 - [x] A clone of cat command.
 - [x] A clone of ls command.
 
