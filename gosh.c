@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <fcntl.h>
 #include "error_handling.h"
 #include "shell_functions.h"
@@ -29,13 +30,15 @@ int main(int argc, char *argv[])
         shellFile = fopen(argv[1], "r");
         if (!shellFile)
         {
-            perror("Failed to open the file");
+            // Show error messa with file name
+            printf("Failed to open '%s'", argv[1]);
+            handle_error(errno);
             exit(EXIT_FAILURE);
         }
     }
 
     // Inicializa a lista de caminhos com os programas padrão
-    initialize_paths();
+    //initialize_paths();
 
     while (1)
     {
@@ -43,6 +46,7 @@ int main(int argc, char *argv[])
         { // Se estiver lendo de um arquivo shell
             if (fgets(command, MAX_COMMAND_LENGTH, shellFile) == NULL)
             {
+                perror("Error while reading the shell file");
                 break;
             }
         }
@@ -69,12 +73,12 @@ int main(int argc, char *argv[])
             }
             else
             {
-                perror("getcwd");
+                perror("Failed to get the current working directory");
                 exit(EXIT_FAILURE);
             }
             if (fgets(command, MAX_COMMAND_LENGTH, stdin) == NULL)
             {
-                print_error(READ_ERROR);
+                perror("Failed to read the command");
                 break;
             }
         }
@@ -174,7 +178,7 @@ int main(int argc, char *argv[])
                 }
                 else if (pid < 0)
                 {
-                    print_error(FORK_FAILED);
+                    perror("Failed to fork the process");
                 }
                 else
                 {

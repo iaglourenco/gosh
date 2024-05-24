@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "shell_functions.h"
+#include <errno.h>
 #include "error_handling.h"
 
 #define MAX_PATHS 10
@@ -16,14 +17,11 @@ void help_message()
 {
     printf("gosh - Great, Another Shell\n");
     printf("\tUsage: gosh script-file\n\n");
-    printf("\tInternal commands:\n");
+    printf("\tCommands:\n");
     printf("\t\tcd <path> - Change the current directory\n");
     printf("\t\texit - Exit the shell\n");
     printf("\t\tpath [path1 path2 ...] - Show or set the search paths\n");
     printf("\t\thelp - Show this help message\n");
-    printf("\tExternal commands:\n");
-    printf("\t\tls [-l] [-a] [path] - List files and directories\n");
-    printf("\t\tcat <file> - Show the content of a file\n");
 }
 
 void initialize_paths()
@@ -45,7 +43,8 @@ void initialize_paths()
     }
     else
     {
-        perror("getcwd");
+        perror("Erro ao obter o diretório atual");
+        handle_error(errno);
     }
 }
 
@@ -54,13 +53,14 @@ void add_path(char *path)
     // Adiciona um novo caminho à lista
     if (num_paths >= MAX_PATHS)
     {
-        print_error(MAX_PATHS_REACHED);
+        errno = E2BIG;
+        perror("Número máximo de caminhos atingido");
         return;
     }
     char *path_copy = strdup(path);
     if (path_copy == NULL)
     {
-        print_error(MALLOC_FAILED);
+        perror("Erro ao alocar memória");
         return;
     }
     search_paths[num_paths++] = path_copy;
@@ -74,8 +74,8 @@ char *search_executable(char *command)
         char *full_path = malloc(strlen(search_paths[i]) + strlen(command) + 2); // +2 para / e \0
         if (!full_path)
         {
-            perror("malloc");
-            exit(EXIT_FAILURE);
+            perror("Erro ao alocar memória");
+            return NULL;
         }
         sprintf(full_path, "%s/%s", search_paths[i], command);
         if (access(full_path, X_OK) == 0)
@@ -120,12 +120,13 @@ void execute_command(char *command)
         {
             if (chdir(args[1]) != 0)
             {
-                print_error(CD_FAILED);
+                perror("Erro ao mudar de diretório");
             }
         }
         else
         {
-            printf("Uso: cd <caminho>\n");
+            errno = EINVAL;
+            perror("Uso: cd <caminho>");
         }
         return;
     }
@@ -156,15 +157,15 @@ void execute_command(char *command)
         pid = fork();
         if (pid < 0)
         {
-            perror("fork");
+            perror("Erro ao criar processo");
             return;
         }
         else if (pid == 0)
         {
             if (execv(executable_path, args) == -1)
             {
-                print_error(EXEC_FAILED);
-                exit(EXIT_FAILURE);
+                perror("Erro ao executar comando");
+                exit(EXIT_FAILURE); // Sai do processo filho se houver erro
             }
         }
         else
@@ -176,6 +177,8 @@ void execute_command(char *command)
     }
     else
     {
-        print_error(INVALID_COMMAND);
+        printf("Comando não encontrado: %s", args[0]);
+        errno = ENOENT;
+        handle_error(errno);
     }
 }
